@@ -1,56 +1,68 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { Link, useParams } from "react-router-dom";
 import { ProfilePhoto } from "../../components/ProfilePhoto";
 import { PostProfileHeader } from "../posts/PostProfileHeader";
-import { useSelector } from "react-redux";
-import { selectUserById } from "./userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { getFollowers } from "./userSlice";
+import { toastError } from "../utils/toastMessage";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 export const Followers = () => {
   const { username } = useParams();
-  console.log(username);
+  const [status, setStatus] = useState("idle");
+  const dispatch = useDispatch();
+  const { followers } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.auth);
 
-  const { followers } = useSelector((state) => selectUserById(state, username));
-  console.log(followers);
-  const myFollowers = useSelector((state) => state.user.userDb);
-  console.log(myFollowers);
+  useEffect(() => {
+    if (token) {
+      (async () => {
+        try {
+          setStatus("pending");
+          const result = await dispatch(getFollowers(username));
+          unwrapResult(result);
+          setStatus("success");
+        } catch (error) {
+          console.log(error);
+          toastError("Something went wrong, cannot load post");
+          setStatus("idle");
+        }
+      })();
+    }
+  }, [dispatch, username, token]);
 
-  const myTotalFollowers = followers.map((userid) => {
-    return myFollowers.find((item) => item.id === userid);
-  });
-
-  console.log(myTotalFollowers);
-
-  const renderFollowers = React.Children.toArray(
-    myTotalFollowers.map((user) => (
-      <div className="flex pl-2 pt-3 ">
-        <ProfilePhoto
-          photo={user.profilePhoto}
-          firstName={user.firstName}
-          lastName={user.lastName}
-        />
-        <div className="pl-3 pt-2">
-          <PostProfileHeader
-            username={user.username}
-            firstName={user.firstName}
-            lastName={user.lastName}
-          />
-        </div>
+  const renderFollowers =
+    followers.length === 0 ? (
+      <div className="text-center">
+        <p className="p-2">No followers yet</p>
       </div>
-    ))
-  );
+    ) : (
+      React.Children.toArray(
+        followers?.map((user) => (
+          <div className="flex pl-2 pt-3 ">
+            <ProfilePhoto photo={user.profilePicture} name={user.name} />
+            <div className="pl-3 pt-2">
+              <PostProfileHeader username={user.username} name={user.name} />
+            </div>
+          </div>
+        ))
+      )
+    );
 
   return (
     <div className="flex items-center flex-col mt-3 mb-10">
       <h1>Followers</h1>
       <div className="bg-white mt-1 p-3 md:p-3 md:p-0 w-full md:w-1/2 rounded shadow">
         <div className="mx-2 py-1 border-b-2">
-          <Link to="/home" className="flex items-center text-2xl font-bold ">
+          <Link
+            to={`/${username}`}
+            className="flex items-center text-2xl font-bold ">
             <TiArrowBack />
             <span>Back</span>
           </Link>
         </div>
-        {renderFollowers}
+        {status === "success" && renderFollowers}
       </div>
     </div>
   );

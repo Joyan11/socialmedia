@@ -1,108 +1,200 @@
-import { createAsyncThunk, nanoid, createSlice } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const userDb = [
-  {
-    id: "1",
-    firstName: "AJ",
-    lastName: "Applegate",
-    username: "bifaj",
-    isAdmin: false,
-    bio: "",
-    profilePhoto:
-      "https://images.pexels.com/photos/208321/pexels-photo-208321.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-    followers: ["2", "3"],
-    following: ["3"],
-    timeline: [],
-    from: "Las Vegas",
-  },
-  {
-    id: "2",
-    firstName: "Joey",
-    lastName: "Armstrong",
-    username: "jamstrong",
-    profilePhoto: null,
-    isAdmin: false,
-    bio: "",
-    followers: ["1", "3"],
-    following: ["1"],
-    timeline: [],
-    from: "Springfield",
-  },
-  {
-    id: "3",
-    firstName: "Autumn",
-    lastName: "Falls",
-    username: "autfall",
-    isAdmin: false,
-    bio: "",
-    profilePhoto: null,
-    followers: ["1", "2"],
-    following: ["1", "2"],
-    timeline: [],
-    from: "Los Angelos",
-  },
-  {
-    id: "4",
-    firstName: "Billy",
-    lastName: "Gilmour",
-    username: "bgilmour",
-    website: "www.google.com",
-    profilePhoto:
-      "https://images.pexels.com/photos/208321/pexels-photo-208321.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-    bio: "lorem ipsum.lorem ipsum. lorem lorem",
-    followers: ["3", "2", "1"],
-    following: ["1", "2"],
-    timeline: [],
-    from: "Manchester",
-    isAdmin: true,
-  },
-];
+export const searchUserClicked = createAsyncThunk(
+  "users/Search",
+  async (value, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER}/user?username=${value}`
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.resposne);
+    }
+  }
+);
+
+export const fetchUser = createAsyncThunk(
+  "users/fetchUser",
+  async (username, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER}/user/${username}`
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "users.editProfile",
+  async ({ values, image }, { fulfillWithValue, rejectWithValue }) => {
+    if (image) {
+      const formData = new FormData();
+      const fileName = Date().now + image.name;
+      formData.append("image", image);
+      formData.append("name", fileName);
+      try {
+        const { data, status } = await axios.post(
+          `${process.env.REACT_APP_SERVER}/images/upload`,
+          formData
+        );
+        if (status === 201) {
+          values.profilePicture = data.url;
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER}/user/update`,
+        values
+      );
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      rejectWithValue(error.response);
+    }
+  }
+);
+
+export const followButtonPressed = createAsyncThunk(
+  "user/follow",
+  async (userid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER}/user/follow`,
+        { targetid: userid }
+      );
+      console.log(response.data);
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.resposne);
+    }
+  }
+);
+
+export const unFollowButtonPressed = createAsyncThunk(
+  "user/unfollow",
+  async (userid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER}/user/unfollow`,
+        { targetid: userid }
+      );
+
+      return fulfillWithValue(response.data);
+    } catch (error) {
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+export const getFollowers = createAsyncThunk(
+  "user/followers",
+  async (username) => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER}/user/${username}/followers`
+    );
+    return response.data;
+  }
+);
+
+export const getFollowing = createAsyncThunk(
+  "user/following",
+  async (username) => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER}/user/${username}/following`
+    );
+    return response.data;
+  }
+);
 
 const userSlice = createSlice({
   name: "users",
   initialState: {
-    userDb: userDb,
+    user: "",
+    followers: [],
+    following: [],
     status: "idle",
     error: null,
   },
-  reducers: {
-    followButtonPressed: (state, action) => {
-      const existingUser = state.userDb.find(
-        (item) => item.id === action.payload
-      );
-      if (existingUser) {
-        existingUser.followers.push("4");
-      }
-      const currentUser = state.userDb.find((item) => item.id === "4");
-      if (currentUser) {
-        currentUser.following.push(action.payload);
-      }
+  reducers: {},
+  extraReducers: {
+    [fetchUser.pending]: (state, action) => {
+      state.status = "pending";
     },
-    unfollowButtonPressed: (state, action) => {
-      const existingUser = state.userDb.find(
-        (item) => item.id === action.payload
-      );
-      if (existingUser) {
-        const index = existingUser.followers.indexOf("4");
-        existingUser.followers.splice(index, 1);
-      }
-      const currentUser = state.userDb.find((item) => item.id === "4");
-      if (currentUser) {
-        const index = existingUser.followers.indexOf(action.payload);
-        currentUser.following.splice(index, 1);
-      }
+    [fetchUser.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.user = action.payload;
+    },
+    [fetchUser.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error;
+    },
+    [updateProfile.pending]: (state, action) => {
+      state.status = "pending";
+    },
+    [updateProfile.fulfilled]: (state, action) => {
+      state.user = action.payload;
+      state.status = "success";
+    },
+    [updateProfile.pending]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error;
+    },
+    [followButtonPressed.pending]: (state, action) => {
+      state.status = "pending";
+    },
+    [followButtonPressed.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.user.followers = action.payload.followers;
+    },
+    [followButtonPressed.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error;
+    },
+    [unFollowButtonPressed.pending]: (state) => {
+      state.status = "pending";
+    },
+    [unFollowButtonPressed.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.user.followers = action.payload.followers;
+    },
+    [unFollowButtonPressed.rejected]: (state, action) => {
+      state.status = "failed";
+      state.status = action.error;
+    },
+    [getFollowers.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getFollowers.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.followers = action.payload;
+    },
+    [getFollowers.rejected]: (state, action) => {
+      state.status = "failed";
+      state.status = action.error;
+    },
+    [getFollowing.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getFollowing.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.following = action.payload;
+    },
+    [getFollowing.rejected]: (state, action) => {
+      state.status = "failed";
+      state.status = action.error;
     },
   },
-  extraReducers: {},
 });
 
-export const {
-  postAdded,
-  likedPost,
-  followButtonPressed,
-  unfollowButtonPressed,
-} = userSlice.actions;
+export const { postAdded, likedPost, unfollowButtonPressed } =
+  userSlice.actions;
 export default userSlice.reducer;
 
 export const selectUserById = (state, username) =>

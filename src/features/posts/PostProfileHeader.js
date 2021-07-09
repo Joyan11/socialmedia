@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-export const PostProfileHeader = ({ username, firstName, lastName }) => {
+export const PostProfileHeader = ({ username, name }) => {
   return (
     <div className="flex items-center">
       <Link to={`/${username}`} className="font-medium font-bold">
-        {firstName} {lastName}
+        {name}
       </Link>
       <Link
         to={`/${username}`}

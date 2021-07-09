@@ -1,16 +1,51 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { reactionAdded } from "./postSlice";
 import { FiThumbsUp } from "react-icons/fi";
-import { likedPost } from "./postSlice";
+import {
+  likePost,
+  likeSinglePost,
+  unlikePost,
+  unLikeSinglePost,
+} from "./postSlice";
 
-export const LikeButton = ({ post }) => {
+export const LikeButton = ({ post, type }) => {
   const dispatch = useDispatch();
+
+  const { currentUser } = useSelector((state) => state.auth);
+
+  const likeColorToggle = (post) => {
+    if (post?.likes.includes(currentUser.userid)) {
+      return "text-blue-500";
+    } else {
+      return "";
+    }
+  };
+
+  const likeButtonHandler = (post) => {
+    if (post?.likes.includes(currentUser.userid)) {
+      if (type === "single") {
+        dispatch(unLikeSinglePost(post._id));
+      } else {
+        dispatch(unlikePost(post._id));
+      }
+    } else {
+      if (type === "single") {
+        dispatch(likeSinglePost(post._id));
+      } else {
+        dispatch(likePost(post._id));
+      }
+    }
+  };
 
   return (
     <button
-      onClick={() => dispatch(likedPost({ id: post.id }))}
-      className="post-buttons">
+      onClick={() => likeButtonHandler(post, currentUser)}
+      className={`post-buttons ${likeColorToggle(
+        post,
+        dispatch,
+        currentUser
+      )}`}>
       <FiThumbsUp />
       <span className="pl-1 text-base">Like</span>
     </button>

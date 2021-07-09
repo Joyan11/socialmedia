@@ -1,162 +1,260 @@
-import { createAsyncThunk, nanoid, createSlice } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = {
-  posts: [
-    {
-      id: "1",
-      userid: "4",
-      firstName: "Billy",
-      lastName: "Gilmour",
-      username: "bgilmour",
-      profilePhoto: null,
-      date: sub(new Date(), { minutes: 10 }).toISOString(),
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae pharetra sem",
-      likes: 0,
-      comments: [
-        {
-          firstName: "Billy",
-          lastName: "Gilmour",
-          username: "bgilmour",
-          profilePhoto: null,
-          content: "What an amazing scenery mate",
-          date: sub(new Date(), { minutes: 10 }).toISOString(),
-        },
-        {
-          firstName: "Joey",
-          lastName: "Salazar",
-          username: "jamstrong",
-          profilePhoto: null,
-          content: "I'm loving It",
-          date: sub(new Date(), { minutes: 10 }).toISOString(),
-        },
-      ],
-    },
-    {
-      id: "2",
-      userid: 2,
-      firstName: "Joey",
-      lastName: "Armstrong",
-      username: "jamstrong",
-      profilePhoto:
-        "https://images.pexels.com/photos/2589653/pexels-photo-2589653.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      image:
-        "https://images.pexels.com/photos/5815106/pexels-photo-5815106.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      date: sub(new Date(), { minutes: 10 }).toISOString(),
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae pharetra sem",
-      likes: 0,
-      comments: [],
-    },
-    {
-      id: "5",
-      userid: 4,
-      firstName: "Billy",
-      lastName: "Gilmour",
-      username: "bgilmour",
-      profilePhoto: null,
-      image:
-        "https://images.pexels.com/photos/5815106/pexels-photo-5815106.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      date: sub(new Date(), { minutes: 10 }).toISOString(),
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae pharetra sem",
-      likes: 0,
-      comments: [],
-    },
-    {
-      id: "3",
-      userid: "3",
-      firstName: "Autumn",
-      lastName: "Falls",
-      username: "autfall",
-      profilePhoto: null,
-      image:
-        "https://images.pexels.com/photos/5815106/pexels-photo-5815106.png?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      date: sub(new Date(), { minutes: 10 }).toISOString(),
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae pharetra sem",
-      likes: 0,
-      comments: [],
-    },
-    {
-      id: "4",
-      userid: "1",
-      firstName: "AJ",
-      lastName: "Applegate",
-      username: "bifaj",
-      profilePhoto: null,
-      date: sub(new Date(), { minutes: 10 }).toISOString(),
-      content:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum vitae pharetra sem",
-      likes: 0,
-      comments: [],
-    },
-  ],
-};
+export const fetchAllPosts = createAsyncThunk(
+  "posts/fetchallPosts",
+  async () => {
+    const { data } = await axios.get(
+      `${process.env.REACT_APP_SERVER}/post/feed`
+    );
+
+    return data;
+  }
+);
+
+export const likePost = createAsyncThunk(
+  "post/likePost",
+  async (postid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post/${postid}/like`
+      );
+      if (status === 201) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const unlikePost = createAsyncThunk(
+  "post/unlikePost",
+  async (postid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post/${postid}/unlike`
+      );
+      if (status === 200) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const fetchSinglePost = createAsyncThunk(
+  "post/fetchSinglePost",
+  async (postid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.get(
+        `${process.env.REACT_APP_SERVER}/post/${postid}`
+      );
+      if (status === 200) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const likeSinglePost = createAsyncThunk(
+  "post/likeSinglePost",
+  async (postid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post/${postid}/likeone`
+      );
+      if (status === 201) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const unLikeSinglePost = createAsyncThunk(
+  "post/unlikeSinglePost",
+  async (postid, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post/${postid}/unlikeone`
+      );
+      if (status === 200) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const postComment = createAsyncThunk(
+  "post/postComment",
+  async ({ postid, comment }, { fulfillWithValue, rejectWithValue }) => {
+    try {
+      const { status, data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post/${postid}/comment`,
+        { comment }
+      );
+      if (status === 201) {
+        return fulfillWithValue(data);
+      }
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const createPost = createAsyncThunk(
+  "post/createPost",
+  async ({ content, image }, { fulfillWithValue, rejectWithValue }) => {
+    let postData = {
+      desc: content,
+    };
+    if (image) {
+      const formData = new FormData();
+      const fileName = Date().now + image.name;
+      formData.append("image", image);
+      formData.append("name", fileName);
+      try {
+        const { data, status } = await axios.post(
+          `${process.env.REACT_APP_SERVER}/images/upload`,
+          formData
+        );
+        if (status === 201) {
+          postData.image = data.url;
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_SERVER}/post`,
+        postData
+      );
+      return fulfillWithValue(data);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
+export const getAllUserPost = createAsyncThunk(
+  "post/getAllUserPost",
+  async (userid) => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER}/post/${userid}/allposts`
+    );
+
+    return response.data;
+  }
+);
+
+export const getAllLikedPost = createAsyncThunk(
+  "post/getAllLikedPost",
+  async (userid) => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER}/post/${userid}/likedposts`
+    );
+
+    return response.data;
+  }
+);
 
 const postSlice = createSlice({
   name: "posts",
-  initialState: initialState,
-  status: "idle",
-  error: null,
-  reducers: {
-    postAdded: {
-      reducer: (state, action) => {
-        state.posts.push(action.payload);
-      },
-      prepare(content) {
-        return {
-          payload: {
-            id: nanoid(),
-            firstName: "Billy",
-            lastName: "Gilmour",
-            username: "bgilmour",
-            profilePhoto: null,
-            content,
-            date: new Date().toISOString(),
-            likes: 0,
-            comments: [],
-          },
-        };
-      },
+  initialState: {
+    posts: [],
+    singlePost: "",
+    status: "idle",
+    error: null,
+  },
+  reducers: {},
+  extraReducers: {
+    [fetchAllPosts.pending]: (state) => {
+      state.status = "pending";
     },
-    likedPost: (state, action) => {
-      const { id } = action.payload;
-      const existingPost = state.posts.find((post) => post.id === id);
-      if (existingPost) {
-        existingPost.likes++;
-      }
+    [fetchAllPosts.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.posts = action.payload;
     },
-    commentPost: {
-      reducer: (state, action) => {
-        const existingPost = state.posts.find(
-          (post) => post.id === action.payload.id
-        );
-        if (existingPost) {
-          existingPost.comments.push(action.payload);
-        }
-      },
-      prepare(content, id) {
-        return {
-          payload: {
-            id: id,
-            firstName: "Barry",
-            lastName: "Kripy",
-            username: "bkippy",
-            profilePhoto: null,
-            content,
-            date: sub(new Date(), { minutes: 10 }).toISOString(),
-          },
-        };
-      },
+
+    [likePost.pending]: (state) => {
+      state.status = "pending";
+    },
+    [likePost.fulfilled]: (state, action) => {
+      state.status = "success";
+      const existingPost = state.posts.findIndex(
+        (post) => post._id === action.payload._id
+      );
+      state.posts.splice(existingPost, 1, action.payload);
+    },
+    [likePost.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+    [unlikePost.pending]: (state) => {
+      state.status = "pending";
+    },
+    [unlikePost.fulfilled]: (state, action) => {
+      state.status = "success";
+      const existingPost = state.posts.findIndex(
+        (post) => post._id === action.payload._id
+      );
+      state.posts.splice(existingPost, 1, action.payload);
+    },
+    [unlikePost.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+    },
+    [fetchSinglePost.fulfilled]: (state, action) => {
+      state.singlePost = action.payload;
+    },
+    [likeSinglePost.fulfilled]: (state, action) => {
+      state.singlePost = action.payload;
+    },
+    [unLikeSinglePost.fulfilled]: (state, action) => {
+      state.singlePost = action.payload;
+    },
+    [postComment.fulfilled]: (state, action) => {
+      state.singlePost = action.payload;
+    },
+    [createPost.fulfilled]: (state, action) => {
+      state.posts.push(action.payload);
+      console.log("reducer", action.payload);
+    },
+    [getAllUserPost.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getAllUserPost.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.posts = action.payload;
+    },
+    [getAllUserPost.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error;
+    },
+    [getAllLikedPost.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getAllLikedPost.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.posts = action.payload;
+    },
+    [getAllLikedPost.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error;
     },
   },
-  extraReducers: {},
 });
 
 export const { postAdded, likedPost, commentPost } = postSlice.actions;
 export default postSlice.reducer;
 
 export const selectPostById = (state, id) =>
-  state.post.posts.find((item) => item.id === id);
+  state.post.posts.find((item) => item._id === id);

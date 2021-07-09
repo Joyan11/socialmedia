@@ -10,16 +10,24 @@ export const UserDetails = ({ user }) => {
         <p>{user.bio}</p>
       </div>
       <div className="flex text-gray-500 mt-1">
-        <div className="flex items-center">
-          <GoLocation />
-          <span className="pl-1">{user.from}</span>
-        </div>
-        <div className="flex ml-2 items-center">
-          <BiLinkAlt />
-          <a href="www.google.com" className="pl-1" target="_blank">
-            {/* {user.website} */} google
-          </a>
-        </div>
+        {user.location && (
+          <div className="flex items-center">
+            <GoLocation />
+            <span className="pl-1">{user.location}</span>
+          </div>
+        )}
+        {user.url && (
+          <div className="flex ml-2 items-center">
+            <BiLinkAlt />
+            <a
+              href={`https://${user.url}`}
+              className="pl-1"
+              target="_blank"
+              rel="noreferrer">
+              {user.url}
+            </a>
+          </div>
+        )}
       </div>
       <div className="flex text-gray-600 mt-1 ml-1">
         <Link to="following">

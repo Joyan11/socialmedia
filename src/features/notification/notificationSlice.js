@@ -1,42 +1,59 @@
-import { createAsyncThunk, nanoid, createSlice } from "@reduxjs/toolkit";
-import { sub } from "date-fns";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const notification = [
-  {
-    type: "LIKE",
-    read: true,
-    postID: "1",
-    date: sub(new Date(), { minutes: 10 }).toISOString(),
-    targetUser: "billy",
-    sourceUser: "AJ",
-  },
-  {
-    type: "COMMENT",
-    read: false,
-    postID: "5",
-    date: sub(new Date(), { minutes: 12 }).toISOString(),
-    targetUser: "billy",
-    sourceUser: "Autumn",
-  },
-  {
-    type: "FOLLOW",
-    read: false,
-    postID: "1",
-    date: sub(new Date(), { minutes: 15 }).toISOString(),
-    targetUser: "billy",
-    sourceUser: "joey",
-  },
-];
+export const getNotifications = createAsyncThunk(
+  "notification/getNotification",
+  async () => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER}/notifications`
+    );
+    return response.data;
+  }
+);
+
+export const notificationClicked = createAsyncThunk(
+  "notification/seen",
+  async (id) => {
+    console.log(id);
+    const response = await axios.post(
+      `${process.env.REACT_APP_SERVER}/notifications/${id}/read`
+    );
+    return response.data;
+  }
+);
 
 const notificationSlice = createSlice({
-  name: "unotification",
+  name: "notification",
   initialState: {
-    notification: notification,
+    notification: [],
     status: "idle",
     error: null,
   },
   reducers: {},
-  extraReducers: {},
+  extraReducers: {
+    [getNotifications.pending]: (state) => {
+      state.status = "pending";
+    },
+    [getNotifications.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.notification = action.payload.notification;
+    },
+    [getNotifications.rejected]: (state, action) => {
+      state.status = "pending";
+      state.error = action.error;
+    },
+    [notificationClicked.pending]: (state) => {
+      state.status = "pending";
+    },
+    [notificationClicked.fulfilled]: (state, action) => {
+      state.status = "success";
+      state.notification = action.payload.notification;
+    },
+    [notificationClicked.rejected]: (state, action) => {
+      state.status = "pending";
+      state.error = action.error;
+    },
+  },
 });
 
 export default notificationSlice.reducer;

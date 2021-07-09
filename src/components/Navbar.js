@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { BiPaperPlane } from "react-icons/bi";
 import { AiFillBell, AiOutlineSearch } from "react-icons/ai";
+import { useSelector } from "react-redux";
 
 function Navbar({ setShowModal }) {
-  useEffect(() => {
-    console.log(process.env);
-  }, []);
-  let username = "bgilmour";
-  let photo = null;
+  const { currentUser, token } = useSelector((state) => state.auth);
+  const { notification } = useSelector((state) => state.notify);
   return (
     <div className="flex justify-between bg-white p-1 sticky top-0 z-10">
       <div className="flex p-2">
@@ -17,42 +15,52 @@ function Navbar({ setShowModal }) {
           <Link to="/home">PaperPlane</Link>
         </p>
       </div>
-      <div className="flex space-x-2">
-        <div className="py-2">
-          <AiOutlineSearch
-            onClick={setShowModal}
-            className="text-4xl text-gray-500 cursor-pointer"
-          />
-        </div>
-        <Link to="notifications">
-          <div className="py-2 relative">
-            <AiFillBell className="text-4xl text-gray-500" />
-            <span className="absolute  top-3 left-3 pl-0.5  text-1xl text-white">
-              3
-            </span>
+      {token ? (
+        <div className="flex space-x-2">
+          <div className="py-2">
+            <AiOutlineSearch
+              onClick={setShowModal}
+              className="text-4xl text-gray-500 cursor-pointer"
+            />
           </div>
-        </Link>
-        <Link to={`${username}`}>
-          <div className="flex items-center space-x-1 bg-gray-200 rounded-full mt-2 pr-2 mr-2 md:mr-4">
-            {/* <BiUserCircle className="text-4xl text-gray-500" /> */}{" "}
-            {photo !== null ? (
-              <img
-                src={photo}
-                alt="me"
-                className="rounded-full w-9 h-9 object-cover"
-              />
-            ) : (
-              <div>
-                <div
-                  className={`flex text-1xl text-white items-center justify-center rounded-full w-9 h-9 bg-pink-600`}>
-                  <span>B</span>
+          <Link to="notifications">
+            <div className="py-2 relative">
+              <AiFillBell className="text-4xl text-gray-500" />
+              {notification.length !== 0 && (
+                <span className="absolute  top-3 left-3 pl-0.5  text-1xl text-white">
+                  {notification.length}
+                </span>
+              )}
+            </div>
+          </Link>
+          <Link to={`${currentUser?.username}`}>
+            <div className="flex items-center space-x-1 bg-gray-200 rounded-full mt-2 pr-2 mr-2 md:mr-4">
+              {/* <BiUserCircle className="text-4xl text-gray-500" /> */}{" "}
+              {currentUser?.profilePicture ? (
+                <img
+                  src={currentUser?.profilePicture}
+                  alt="me"
+                  className="rounded-full w-9 h-9 object-cover"
+                />
+              ) : (
+                <div>
+                  <div
+                    className={`flex text-1xl text-white items-center justify-center rounded-full w-9 h-9 bg-pink-600`}>
+                    <span>{currentUser?.name[0]}</span>
+                  </div>
                 </div>
-              </div>
-            )}
-            <div>Billy</div>
-          </div>
+              )}
+              <div>{currentUser?.name}</div>
+            </div>
+          </Link>
+        </div>
+      ) : (
+        <Link
+          to="/login"
+          className="flex items-center rounded-full mt-1 4 mr-2 md:mr-4 text-">
+          Login
         </Link>
-      </div>
+      )}
     </div>
   );
 }

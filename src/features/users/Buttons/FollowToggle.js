@@ -1,22 +1,22 @@
 import React from "react";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { followButtonPressed, unfollowButtonPressed } from "../userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { followButtonPressed, unFollowButtonPressed } from "../userSlice";
 
 export const FollowToggle = ({ user }) => {
-  console.log("following", user.followers);
+  const { currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const userConnection = () => {
-    if (user?.followers.some((user) => user === "4") === false) {
-      dispatch(followButtonPressed(user.id));
+    if (user?.followers.includes(currentUser?.userid)) {
+      dispatch(unFollowButtonPressed(user._id));
     } else {
-      dispatch(unfollowButtonPressed(user.id));
+      dispatch(followButtonPressed(user._id));
     }
   };
 
   const buttonToggle = () => {
-    if (user.followers.some((user) => user === "4")) {
+    if (user?.followers.includes(currentUser?.userid)) {
       return false;
     } else {
       return true;

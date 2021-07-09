@@ -1,16 +1,22 @@
+import { unwrapResult } from "@reduxjs/toolkit";
 import { useState } from "react";
 import { HiOutlinePhotograph } from "react-icons/hi";
-import { ProfilePhoto } from "../../components/ProfilePhoto";
+import { MdCancel } from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../auth/authSlice";
+import { updateProfile } from "./userSlice";
+
 export const EditProfile = ({ setshowEditModal, user }) => {
   const [image, setImage] = useState("");
-  console.log(user);
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.auth);
+
   const [values, setValues] = useState({
-    name: user.firstName,
+    name: user.name,
     bio: user.bio,
-    from: user.from,
-    website: user.website,
+    location: user.location,
+    url: user.url,
   });
-  console.log(image);
 
   const handleChange = (e) => {
     setValues((values) => ({
@@ -19,40 +25,81 @@ export const EditProfile = ({ setshowEditModal, user }) => {
     }));
   };
 
+  const addImage = (event) => {
+    setImage(event.target.files[0]);
+    event.target.value = "";
+  };
+
+  const removeImage = () => {
+    setImage("");
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await dispatch(updateProfile({ values, image }));
+      unwrapResult(result);
+      console.log("result", result);
+      if (result) {
+        const updatedData = {
+          username: result?.payload.username,
+          userid: result?.payload._id,
+          profilePicture: result?.payload.profilePicture,
+          name: result?.payload.name,
+        };
+        console.log("updated profile", updatedData);
+        dispatch(updateUser(updatedData));
+      }
+      setshowEditModal(false);
+      setImage("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none bg-no-repeat bg-center bg-cover">
+    <div className="fixed flex  inset-0 z-50 outline-none focus:outline-none ">
       <div className="absolute bg-black opacity-80 inset-0 z-0"></div>
-      <div className=" max-w-lg w-11/12 md:w-full p-5 relative mx-auto my-auto rounded shadow-lg  bg-white ">
+      <form
+        onSubmit={handleFormSubmit}
+        className=" max-w-lg w-11/12 md:w-full p-5 relative mx-auto my-auto rounded shadow-lg  bg-white ">
         <h1 className="text-2xl font-bold mb-1">Edit Details</h1>
         <div className="space-y-3">
           <div className="flex">
-            <ProfilePhoto
-              photo={user.profilePhoto}
-              firstName={user.firstName}
-              lastName={user.lastName}
-            />
-            <label
-              htmlFor="file"
-              className="flex cursor-pointer items-center rounded p-2 ml-14 font-medium  hover:bg-gray-100">
-              <HiOutlinePhotograph className="text-xl text-green-400" />
-              <span className="text-gray-700">Add/Change Photo</span>
-              <input
-                type="file"
-                name="file"
-                id="file"
-                accept="image/png, image/jpeg, image/jpg"
-                className="hidden"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </label>
+            {/* <ProfilePhoto photo={user.profilePicture} name={user.name} /> */}
+            <div className="flex items-center">
+              <label
+                htmlFor="file"
+                className="flex cursor-pointer items-center rounded p-2  font-medium  hover:bg-gray-100">
+                <HiOutlinePhotograph className="text-xl text-green-400" />
+                <span className="text-gray-700">Add/Change Photo</span>
+                <input
+                  type="file"
+                  name="file"
+                  id="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  className="hidden"
+                  onChange={addImage}
+                />
+              </label>
+              {image && (
+                <MdCancel
+                  className="text-2xl cursor-pointer"
+                  onClick={removeImage}
+                  title="Remove image"
+                />
+              )}
+            </div>
           </div>
           <div className="space-y-2">
             <div>Name:</div>
             <input
               type="text"
-              className="p-1 font-semibold ring-2 focus:ring-3 w-3/4"
+              className="p-1 rounded font-semibold ring-2 focus:ring-3 w-full"
               defaultValue={values.name}
               onChange={handleChange}
+              required
+              name="name"
               id="name"
             />
           </div>
@@ -60,18 +107,20 @@ export const EditProfile = ({ setshowEditModal, user }) => {
             <div>Bio:</div>
             <textarea
               type="text"
-              className="p-1 font-semibold ring-2 focus:ring-3 w-3/4"
+              className="p-1 rounded font-semibold ring-2 focus:ring-3 w-full"
               defaultValue={values.bio}
               onChange={handleChange}
+              name="bio"
               id="bio"></textarea>
           </div>
           <div className="space-y-2">
             <div>Location:</div>
             <input
               type="text"
-              className="p-1 font-semibold ring-2 focus:ring-3 w-3/4"
-              defaultValue={values.from}
+              className="p-1 rounded font-semibold ring-2 focus:ring-3 w-full"
+              defaultValue={values.location}
               onChange={handleChange}
+              name="location"
               id="from"
             />
           </div>
@@ -79,9 +128,12 @@ export const EditProfile = ({ setshowEditModal, user }) => {
             <div>Website:</div>
             <input
               type="text"
-              className="p-1 font-semibold ring-2 focus:ring-3 w-3/4"
-              defaultValue={values.website}
+              className="p-1 rounded font-semibold ring-2 focus:ring-3 w-full"
+              defaultValue={values.url}
               onChange={handleChange}
+              pattern="[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"
+              title="Enter valid url 'www.example.com' "
+              name="url"
               id="website"
             />
           </div>
@@ -96,7 +148,7 @@ export const EditProfile = ({ setshowEditModal, user }) => {
             Save
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

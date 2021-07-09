@@ -1,25 +1,26 @@
 import React from "react";
 import { ProfilePhoto } from "../../../components/ProfilePhoto";
 import { TimeAgo } from "../TimeAgo";
-import { Link } from "react-router-dom";
 import { PostProfileHeader } from "../PostProfileHeader";
-export const Comments = ({ post }) => {
+export const Comments = ({ comments }) => {
   const renderComments = React.Children.toArray(
-    post.comments.map((item) => (
+    comments.map((item) => (
       <div className="bg-white mt-1 w-full p-1 md:p-0 md:max-w-lg rounded shadow">
         <div className="flex pl-2 pt-3">
-          <ProfilePhoto photo={item.profilePhoto} name={item.firstName} />
+          <ProfilePhoto
+            photo={item.userid.profilePicture}
+            name={item.userid.name}
+          />
           <div className="pl-3">
             <PostProfileHeader
-              username={item.username}
-              firstName={item.firstName}
-              lastName={item.lastName}
+              username={item.userid.username}
+              name={item.userid.name}
             />
-            <TimeAgo timestamp={item.date} />
+            <TimeAgo timestamp={item.createdAt} />
           </div>
         </div>
         <div>
-          <p className="py-3 px-2">{item.content}</p>
+          <p className="py-3 px-2">{item.comment}</p>
         </div>
       </div>
     ))
