@@ -19,7 +19,7 @@ export const Login = () => {
     try {
       setStatus("pending");
       const result = await dispatch(
-        login({ userCredential: userCredential.toLowerCase(), password })
+        login({ userCredential: userCredential.toLowerCase().trim(), password })
       );
       unwrapResult(result);
       setStatus("success");
