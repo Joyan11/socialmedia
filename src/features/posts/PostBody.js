@@ -25,7 +25,7 @@ export const PostBody = ({ post }) => {
         </div>
       </div>
       <div>
-        {image && <img src={image} alt="name" className="mt-2" />}
+        {image && <img src={image} alt={name} className="mt-2" />}
         <p className="py-3 px-2">{desc}</p>
       </div>
       <div className="flex justify-end text-gray-700">
