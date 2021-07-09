@@ -105,7 +105,7 @@ export const SinglePostPage = () => {
                   <button
                     className="comment-buttons"
                     onClick={() => setShowBox(false)}>
-                    Cancle
+                    Cancel
                   </button>
                   <button
                     className="comment-buttons"
