@@ -52,6 +52,7 @@ export const SearchModal = ({ setShowModal }) => {
       <div className=" max-w-lg w-11/12 md:w-full p-5 relative mx-auto my-auto rounded shadow-lg  bg-white ">
         <div className="space-y-4">
           <div>
+            <>sample search for test or joey</>
             <div className="flex items-center space-x-1 cursor-pointer ">
               <input
                 type="text"

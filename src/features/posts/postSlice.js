@@ -139,7 +139,7 @@ export const createPost = createAsyncThunk(
       );
       return fulfillWithValue(data);
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(error.response);
     }
   }
 );

@@ -4,20 +4,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { ProfilePhoto } from "../../components/ProfilePhoto";
 import { createPost } from "./postSlice";
 import { MdCancel } from "react-icons/md";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 export const AddPostInput = () => {
   const { currentUser } = useSelector((state) => state.auth);
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
+  const [status, setState] = useState("idle");
   const dispatch = useDispatch();
   const onChangeHandler = (e) => setContent(e.target.value);
 
   const canSave = Boolean(content) || Boolean(image);
 
-  const onSubmitHandler = () => {
-    dispatch(createPost({ content, image }));
-    setContent("");
-    setImage("");
+  const onSubmitHandler = async () => {
+    try {
+      setState("pending");
+      const result = await dispatch(createPost({ content, image }));
+      unwrapResult(result);
+      setContent("");
+      setImage("");
+      setState("success");
+    } catch (error) {
+      console.log(error);
+      setState("idle");
+    }
   };
 
   const addImage = (event) => {
@@ -72,7 +82,7 @@ export const AddPostInput = () => {
           className=" mr-3 md:mr-5 px-8 bg-blue-500 text-white ring rounded-full hover:bg-blue-700 hover:shadow"
           disabled={!canSave}
           onClick={onSubmitHandler}>
-          Post
+          {status === "pending" ? "wait..." : "Post"}
         </button>
       </div>
     </div>

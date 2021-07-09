@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { getNotifications } from "../notification/notificationSlice";
 import { toastError } from "../utils/toastMessage";
 import { login } from "./authSlice";
 
