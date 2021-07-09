@@ -53,7 +53,7 @@ export const Following = () => {
 
   return (
     <div className="flex items-center flex-col mt-3 mb-10">
-      <h1>Followers</h1>
+      <h1>Following</h1>
       <div className="bg-white mt-1 p-3 md:p-3 md:p-0 w-full md:w-1/2 rounded shadow">
         <div className="mx-2 py-1 border-b-2">
           <Link
