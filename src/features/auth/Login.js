@@ -18,7 +18,9 @@ export const Login = () => {
     e.preventDefault();
     try {
       setStatus("pending");
-      const result = await dispatch(login({ userCredential, password }));
+      const result = await dispatch(
+        login({ userCredential: userCredential.toLowerCase(), password })
+      );
       unwrapResult(result);
       setStatus("success");
     } catch (error) {
