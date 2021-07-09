@@ -38,22 +38,33 @@ export const SearchModal = ({ setShowModal }) => {
     ) : (
       React.Children.toArray(
         users?.map((user) => (
-          <div onClick={setShowModal} className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1">
             <ProfilePhoto photo={user.profilePicture} name={user.name} />
-            <PostProfileHeader username={user.username} name={user.name} />
+            <div onClick={setShowModal}>
+              <PostProfileHeader username={user.username} name={user.name} />
+            </div>
           </div>
         ))
       )
     );
 
   return (
-    <div className="min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none bg-no-repeat bg-center bg-cover">
-      <div className="absolute bg-black opacity-80 inset-0 z-0"></div>
-      <div className=" max-w-lg w-11/12 md:w-full p-5 relative mx-auto my-auto rounded shadow-lg  bg-white ">
+    <div className="min-w-screen h-screen fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 ">
+      <div
+        className="absolute bg-black opacity-80 inset-0 z-0"
+        onClick={() => setShowModal(false)}></div>
+      <div className=" max-w-lg w-11/12 h-3/5 overflow-auto px-3 pb-3 relative mx-auto my-auto rounded shadow-lg  bg-white ">
         <div className="space-y-4">
-          <div>
+          <div className="sticky top-0 z-1 pb-2 bg-white">
+            <div className="text-right p-1">
+              <button
+                onClick={setShowModal}
+                className="md:mb-0 bg-white p-1 text-sm shadow-sm font-medium tracking-wider  text-gray-600 rounded-full  hover:bg-gray-100">
+                Cancel
+              </button>
+            </div>
             <>sample search for test or joey</>
-            <div className="flex items-center space-x-1 cursor-pointer ">
+            <div className="flex items-center space-x-1  cursor-pointer ">
               <input
                 type="text"
                 autoFocus={true}
@@ -67,13 +78,6 @@ export const SearchModal = ({ setShowModal }) => {
             </div>
           </div>
           {renderUsers}
-        </div>
-        <div className="p-3  mt-2 text-right space-x-4 md:block">
-          <button
-            onClick={setShowModal}
-            className="mb-2 md:mb-0 bg-white px-5 py-2 text-sm shadow-sm font-medium tracking-wider border text-gray-600 rounded-full hover:shadow-lg hover:bg-gray-100">
-            Cancel
-          </button>
         </div>
       </div>
     </div>
