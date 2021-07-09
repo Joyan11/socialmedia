@@ -27,7 +27,10 @@ function Navbar({ setShowModal }) {
             <div className="py-2 relative">
               <AiFillBell className="text-4xl text-gray-500" />
               {notification.length !== 0 && (
-                <span className="absolute  top-3 left-3 pl-0.5  text-1xl text-white">
+                <span
+                  className={`absolute  top-3 ${
+                    notification.length < 9 ? `left-3` : `left-2`
+                  }  text-1xl text-white`}>
                   {notification.length}
                 </span>
               )}
