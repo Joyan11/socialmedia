@@ -1,3 +1,5 @@
+/** @format */
+
 import "./App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,13 +30,12 @@ function App() {
   const [showModal, setShowModal] = useToggle();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { token } = useSelector((state) => state.auth);
   const { userdata, token } = getLocalStorage();
   useEffect(() => {
     if (token) {
       setupAuthHeaderForServiceCalls(token);
-      dispatch(setData({ userdata, token }));
       setupAuthExceptionHandler(logout, navigate, dispatch);
+      dispatch(setData({ userdata, token }));
       dispatch(getNotifications());
     }
   }, [dispatch, navigate, token, userdata]);

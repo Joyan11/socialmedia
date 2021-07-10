@@ -1,3 +1,5 @@
+/** @format */
+
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
@@ -6,7 +8,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./app/store";
 import reportWebVitals from "./reportWebVitals";
-console.log(store.getState());
 
 ReactDOM.render(
   <React.StrictMode>

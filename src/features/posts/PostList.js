@@ -1,3 +1,5 @@
+/** @format */
+
 import React from "react";
 import { AddPostInput } from "./AddPostInput";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +20,6 @@ export const PostList = () => {
       (async () => {
         try {
           setStatus("pending");
-          console.log("running");
           const result = await dispatch(fetchAllPosts());
           unwrapResult(result);
           setStatus("success");
