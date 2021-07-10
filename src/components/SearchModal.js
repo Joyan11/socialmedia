@@ -1,3 +1,5 @@
+/** @format */
+
 import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { BiSearchAlt2 } from "react-icons/bi";
@@ -12,6 +14,8 @@ export const SearchModal = ({ setShowModal }) => {
   const [status, setStatus] = useState("idle");
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
+
+  const canSave = Boolean(input);
 
   const handleClick = () => {
     (async () => {
@@ -72,7 +76,10 @@ export const SearchModal = ({ setShowModal }) => {
                 placeholder="Search for a user"
                 onChange={(e) => setInput(e.target.value)}
               />
-              <button onClick={handleClick} className="focus:text-green-500">
+              <button
+                onClick={handleClick}
+                disabled={!canSave}
+                className="focus:text-green-500">
                 <BiSearchAlt2 className=" text-4xl" />
               </button>
             </div>
