@@ -1,3 +1,5 @@
+/** @format */
+
 import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -91,6 +93,12 @@ export const Login = () => {
               Joyan Serrao
             </a>{" "}
           </p>
+
+          <div>
+            test credentials:
+            <p>username: testing</p>
+            <p>password: Qwerty123$</p>
+          </div>
         </div>
       </div>
     </div>
