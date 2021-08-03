@@ -16,6 +16,11 @@ export const Login = () => {
   const dispatch = useDispatch();
   const [status, setStatus] = useState("idle");
 
+  const guestLogin = (e) => {
+    setuserCredential("testing");
+    setPassword("Qwerty123$");
+  };
+
   const loginHandler = async (e) => {
     e.preventDefault();
     try {
@@ -52,6 +57,7 @@ export const Login = () => {
             type="text"
             className="block border border-grey-light w-full p-2 rounded mb-4 focus:outline-none focus:ring"
             name="usercred"
+            value={userCredential}
             onChange={(e) => setuserCredential(e.target.value)}
             required
             placeholder="Username or Email"
@@ -61,6 +67,7 @@ export const Login = () => {
             type="password"
             className="block border border-grey-light w-full p-3 rounded mb-4 focus:outline-none focus:ring"
             name="password"
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
@@ -69,7 +76,7 @@ export const Login = () => {
             type="submit"
             disabled={status === "pending" && true}
             className="w-full text-center py-3 rounded bg-blue-500 text-white hover:bg-blue-700 focus:outline-none focus:ring my-1">
-            {status === "pending" ? "Loading..." : "login"}
+            {status === "pending" ? "Loading..." : "Login"}
           </button>
 
           <div className="text-grey-dark mt-3 text-center">
@@ -95,9 +102,11 @@ export const Login = () => {
           </p>
 
           <div>
-            test credentials:
-            <p>username: testing</p>
-            <p>password: Qwerty123$</p>
+            <button
+              onClick={guestLogin}
+              className="w-6/12 text-center py-1 rounded bg-blue-500 text-white hover:bg-blue-700 focus:outline-none focus:ring my-1">
+              Enter Guest Details
+            </button>
           </div>
         </div>
       </div>
