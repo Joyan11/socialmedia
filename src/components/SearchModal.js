@@ -17,6 +17,12 @@ export const SearchModal = ({ setShowModal }) => {
 
   const canSave = Boolean(input);
 
+  const onPressEnter = (e) => {
+    if (e.key === "Enter") {
+      handleClick();
+    }
+  };
+
   const handleClick = () => {
     (async () => {
       try {
@@ -75,6 +81,7 @@ export const SearchModal = ({ setShowModal }) => {
                 className="text ring rounded-full text-1xl p-1 w-full"
                 placeholder="Search for a user"
                 onChange={(e) => setInput(e.target.value)}
+                onKeyPress={onPressEnter}
               />
               <button
                 onClick={handleClick}
