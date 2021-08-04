@@ -1,3 +1,5 @@
+/** @format */
+
 import React from "react";
 import { TiArrowBack } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
@@ -97,7 +99,7 @@ export const UserProfile = () => {
   return (
     <div className="flex items-center flex-col">
       {status === "success" && renderUserProfile}
-      {status === "pending" && "Loading..."}
+      {status === "pending" && <p className="text-2xl mt-4">Loading...</p>}
       {showEditModal && (
         <EditProfile setshowEditModal={setshowEditModal} user={user} />
       )}

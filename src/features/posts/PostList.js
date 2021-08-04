@@ -48,7 +48,7 @@ export const PostList = () => {
   return (
     <div className="flex items-center flex-col mt-3 mb-5">
       <AddPostInput />
-      {status === "pending" && "Loading..."}
+      {status === "pending" && <p className="text-2xl">Loading...</p>}
       {status === "success" && renderContent}
     </div>
   );
