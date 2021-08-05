@@ -79,6 +79,14 @@ export const Login = () => {
             {status === "pending" ? "Loading..." : "Login"}
           </button>
 
+          <div className="text-center">
+            <button
+              onClick={guestLogin}
+              className="w-full text-center py-1 rounded bg-blue-500 text-white hover:bg-blue-700 focus:outline-none focus:ring my-1">
+              Enter Guest Details
+            </button>
+          </div>
+
           <div className="text-grey-dark mt-3 text-center">
             Don't have an account?
             <Link to="/signup" className="border-b border-blue text-blue">
@@ -100,14 +108,6 @@ export const Login = () => {
               Joyan Serrao
             </a>{" "}
           </p>
-
-          <div>
-            <button
-              onClick={guestLogin}
-              className="w-6/12 text-center py-1 rounded bg-blue-500 text-white hover:bg-blue-700 focus:outline-none focus:ring my-1">
-              Enter Guest Details
-            </button>
-          </div>
         </div>
       </div>
     </div>
