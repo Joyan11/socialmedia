@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect } from "react";
 // import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,15 +24,23 @@ export const SinglePostPage = () => {
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [pending, setPending] = useState("idle");
+  const [commentLoad, setCommentLoad] = useState(false);
 
   const canPost = Boolean(comment);
 
   const post = useSelector((state) => state.post.singlePost);
 
-  const handleOnclickHandler = (post) => {
-    dispatch(postComment({ postid: post._id, comment }));
-    setShowBox(false);
-    setComment("");
+  const handleOnclickHandler = async (post) => {
+    setCommentLoad(true);
+    try {
+      await dispatch(postComment({ postid: post._id, comment }));
+      setComment("");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setCommentLoad(false);
+      setShowBox(false);
+    }
   };
 
   useEffect(() => {
@@ -111,7 +121,7 @@ export const SinglePostPage = () => {
                     className="comment-buttons"
                     onClick={() => handleOnclickHandler(post)}
                     disabled={!canPost}>
-                    Save
+                    {commentLoad ? "wait.." : "Save"}
                   </button>
                 </div>
               </div>
@@ -127,7 +137,10 @@ export const SinglePostPage = () => {
     <section>
       {renderSinglePost}
       <div className="text-center">
-        <p> {pending === "pending" && "Loading..."}</p>
+        <p className="text-2xl pt-4">
+          {" "}
+          {pending === "pending" && "Loading..."}
+        </p>
       </div>
     </section>
   );

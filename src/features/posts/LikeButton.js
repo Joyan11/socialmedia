@@ -1,4 +1,6 @@
-import React from "react";
+/** @format */
+
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 // import { reactionAdded } from "./postSlice";
 import { FiThumbsUp } from "react-icons/fi";
@@ -8,9 +10,11 @@ import {
   unlikePost,
   unLikeSinglePost,
 } from "./postSlice";
+import { findAllByRole } from "@testing-library/react";
 
 export const LikeButton = ({ post, type }) => {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
 
   const { currentUser } = useSelector((state) => state.auth);
 
@@ -22,32 +26,41 @@ export const LikeButton = ({ post, type }) => {
     }
   };
 
-  const likeButtonHandler = (post) => {
-    if (post?.likes.includes(currentUser.userid)) {
-      if (type === "single") {
-        dispatch(unLikeSinglePost(post._id));
+  const likeButtonHandler = async (post) => {
+    setLoading(true);
+    try {
+      if (post?.likes.includes(currentUser.userid)) {
+        if (type === "single") {
+          await dispatch(unLikeSinglePost(post._id));
+        } else {
+          await dispatch(unlikePost(post._id));
+        }
       } else {
-        dispatch(unlikePost(post._id));
+        if (type === "single") {
+          await dispatch(likeSinglePost(post._id));
+        } else {
+          await dispatch(likePost(post._id));
+        }
       }
-    } else {
-      if (type === "single") {
-        dispatch(likeSinglePost(post._id));
-      } else {
-        dispatch(likePost(post._id));
-      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
+  console.log(loading);
 
   return (
     <button
       onClick={() => likeButtonHandler(post, currentUser)}
+      disabled={loading ? true : false}
       className={`post-buttons ${likeColorToggle(
         post,
         dispatch,
         currentUser
       )}`}>
       <FiThumbsUp />
-      <span className="pl-1 text-base">Like</span>
+      <span className="pl-1 text-base">{loading ? "wait" : "Like"}</span>
     </button>
   );
 };
