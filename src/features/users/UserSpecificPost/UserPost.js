@@ -1,3 +1,5 @@
+/** @format */
+
 import { unwrapResult } from "@reduxjs/toolkit";
 import React, { useState } from "react";
 import { useEffect } from "react";
@@ -44,5 +46,10 @@ export const UserPost = () => {
       )
     );
 
-  return <>{status === "success" && renderContent}</>;
+  return (
+    <>
+      {status === "success" && renderContent}
+      <p className="text-1xl">{status === "pending" && "Loading..."}</p>
+    </>
+  );
 };

@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PostBody } from "../../posts/PostBody";
@@ -44,5 +46,10 @@ export const UserLikedPosts = () => {
       )
     );
 
-  return <>{status === "success" && renderContent}</>;
+  return (
+    <>
+      {status === "success" && renderContent}
+      <p className="text-1xl">{status === "pending" && "Loading..."}</p>
+    </>
+  );
 };
