@@ -18,13 +18,14 @@ export const SearchModal = ({ setShowModal }) => {
   const canSave = Boolean(input);
 
   const onPressEnter = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && canSave) {
       handleClick();
     }
   };
 
   const handleClick = () => {
     (async () => {
+      setUsers([]);
       try {
         setStatus("pending");
         const result = await dispatch(searchUserClicked(input.toLowerCase()));
@@ -92,6 +93,9 @@ export const SearchModal = ({ setShowModal }) => {
             </div>
           </div>
           {renderUsers}
+          <p className="text-1xl text-center">
+            {status === "pending" && "Fetching Users..."}
+          </p>
         </div>
       </div>
     </div>
