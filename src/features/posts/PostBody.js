@@ -1,3 +1,5 @@
+/** @format */
+
 import { TimeAgo } from "./TimeAgo";
 import { Link } from "react-router-dom";
 import { LikeButton } from "./LikeButton";
@@ -25,7 +27,13 @@ export const PostBody = ({ post }) => {
         </div>
       </div>
       <div>
-        {image && <img src={image} alt={name} className="mt-2" />}
+        {image && (
+          <img
+            src={image}
+            alt={name}
+            className="mt-2 w-full max-h-96 object-contain"
+          />
+        )}
         <p className="py-3 px-2">{desc}</p>
       </div>
       <div className="flex justify-end text-gray-700">
