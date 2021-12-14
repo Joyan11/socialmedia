@@ -34,7 +34,7 @@ export const PostBody = ({ post }) => {
             className="mt-2 w-full max-h-96 object-contain"
           />
         )}
-        <p className="py-3 px-2">{desc}</p>
+        <p className="py-3 px-2 break-words">{desc}</p>
       </div>
       <div className="flex justify-end text-gray-700">
         <p className="mr-2">{likes.length} likes</p>
